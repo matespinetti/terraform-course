@@ -5,7 +5,6 @@ output "vpc_info" {
         vpc_cidr_block = module.vpc.vpc_cidr_block
         nat_public_ips = module.vpc.nat_public_ips
 
-
         public_subnets = [
             for idx, subnet in module.vpc.public_subnet_objects : {
                 subnet_id = subnet.id
@@ -29,7 +28,6 @@ output "vpc_info" {
                 subnet_availability_zone = subnet.availability_zone
             }
         ]
-        
     }
 }
 

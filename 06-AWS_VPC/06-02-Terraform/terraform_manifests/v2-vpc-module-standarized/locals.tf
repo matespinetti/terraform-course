@@ -1,3 +1,13 @@
+locals {
+    owners = var.business_division
+    environment = var.environment
+    name = "${local.owners}-${local.environment}"
+    common_tags = {
+        owners = local.owners
+        environment = local.environment
+    }
+}
+
 data "aws_availability_zones" "available" {
     state = "available"
 }
@@ -9,6 +19,4 @@ locals  {
     public_subnets = [for k,v in local.azs : cidrsubnet(local.vpc_cidr_block, 8, k)]
     private_subnets = [for k,v in local.azs : cidrsubnet(local.vpc_cidr_block, 8, k + 10)]
     database_subnets = [for k,v in local.azs : cidrsubnet(local.vpc_cidr_block, 8, k + 20)]
-    
-
 }
