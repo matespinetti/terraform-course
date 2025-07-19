@@ -105,3 +105,17 @@ variable "domain_name" {
   default = "matespinetti.me"
 }
 
+variable "app1_host_header" {
+  description = "Host Header for App1"
+  type = string
+  default = "app1.${var.domain_name}"
+}
+
+variable "app2_host_header" {
+  description = "Host Header for App2"
+  type = string
+  default = "app2.${var.domain_name}"
+}
+
+
+

@@ -51,8 +51,8 @@ module "alb" {
             }
           ]
           conditions = [{
-              path_pattern = {
-                values = ["/app1/*"]
+              host_header = {
+                values = [var.app1_host_header]
               }
             }]
         }
@@ -67,8 +67,8 @@ module "alb" {
           ]
           conditions = [
             {
-              path_pattern = {
-                values = ["/app2/*"]
+              host_header = {
+                values = [var.app2_host_header]
               }
             }
           ] 
