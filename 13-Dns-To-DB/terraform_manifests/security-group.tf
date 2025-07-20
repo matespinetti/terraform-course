@@ -90,3 +90,41 @@ module "alb_sg" {
 }
 
 
+#Spring Boot App Security Group
+module "spring_boot_app_sg" {
+  source  = "terraform-aws-modules/security-group/aws"
+  version = "5.3.0"
+
+  name = "${local.name}-spring-boot-app-sg"
+}
+
+
+#RDS Security Group
+module "rds_sg" {
+  source  = "terraform-aws-modules/security-group/aws"
+  version = "5.3.0"
+
+  name = "${local.name}-rds-sg"
+  description = "Security Group with MySQL port open from spring boot app and bastion host"
+  vpc_id = module.vpc.vpc_id
+
+  computed_ingress_with_source_security_group_id = [
+    {
+      rule = "mysql-tcp"
+      source_security_group_id = module.spring_boot_app_sg.security_group_id
+    },
+    {
+      rule = "mysql-tcp"
+      source_security_group_id = module.public_bastion_sg.security_group_id
+    }
+  ]
+
+  egress_with_cidr_blocks = [
+    {
+      rule = "all-all"
+      cidr_blocks = "0.0.0.0/0"
+    }
+  ]
+
+  tags = local.common_tags
+}

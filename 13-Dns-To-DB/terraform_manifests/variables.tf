@@ -117,5 +117,34 @@ variable "app2_host_header" {
   default = "app2"
 }
 
+#RDS VARIABLES
+variable "web_app_db_name" {
+  description = "RDS DB Name"
+  type = string
 
+}
 
+variable "web_app_db_instance_identifier" {
+  description = "RDS DB Instance Identifier"
+  type = string
+
+}
+
+variable "web_app_db_instance_class" {
+  description = "RDS DB Instance Class"
+  type = string
+  default = "db.t3.micro"
+}
+
+variable "web_app_db_username" {
+  description = "RDS DB Username"
+  type = string
+ 
+}
+
+variable "web_app_db_password" {
+  description = "RDS DB Password"
+  type = string
+  sensitive = true
+ 
+}

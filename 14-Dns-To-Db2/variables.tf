@@ -62,10 +62,7 @@ variable "create_database_subnet_route_table" {
   default = true
 }
 
-
-#EC2 VARIABLES
-
-# Bastion Host Variables
+# EC2 VARIABLES
 variable "bastion_host_instance_type" {
   description = "Instance Type for Bastion Host"
   type = string
@@ -77,8 +74,6 @@ variable "bastion_host_key_pair_name" {
   type = string
   default = "terraform-key1"
 }
-
-# Private App Server Variables
 
 variable "private_app_instance_count" {
   description = "Number of Private App Instances"
@@ -98,7 +93,6 @@ variable "private_app_instance_type" {
   default = "t3.micro"
 }
 
-
 variable "domain_name" {
   description = "Domain Name"
   type = string
@@ -117,5 +111,37 @@ variable "app2_host_header" {
   default = "app2"
 }
 
+# RDS VARIABLES
+variable "web_app_db_name" {
+  description = "RDS DB Name"
+  type = string
+}
 
+variable "web_app_db_instance_identifier" {
+  description = "RDS DB Instance Identifier"
+  type = string
+}
+
+variable "web_app_db_instance_class" {
+  description = "RDS DB Instance Class"
+  type = string
+  default = "db.t3.micro"
+}
+
+variable "web_app_db_username" {
+  description = "RDS DB Username"
+  type = string
+}
+
+variable "web_app_db_port" {
+  description = "RDS DB Port"
+  type = string
+  default = "3306"
+}
+
+variable "web_app_db_password" {
+  description = "RDS DB Password"
+  type = string
+  sensitive = true
+}
 

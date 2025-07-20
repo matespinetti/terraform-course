@@ -3,18 +3,18 @@ module "alb" {
   version = "9.17.0"
 
   load_balancer_type = "application"
-  name = local.alb_name
-  #Network configuration
-  vpc_id = module.vpc.vpc_id
-  subnets = local.alb_subnets
+  name = var.alb_name
+  
+  # Network configuration
+  vpc_id = var.vpc_id
+  subnets = var.alb_subnets
 
-  #Security configuration
-  security_groups = [module.alb_sg.security_group_id]
+  # Security configuration
+  security_groups = [var.alb_sg_id]
 
-
-  #Listeners
+  # Listeners
   listeners = {
-    #Listener-1: HTTP Listener
+    # Listener-1: HTTP Listener
     my-http-https-redirect-listener = {
       port = 80
       protocol = "HTTP"
@@ -22,66 +22,83 @@ module "alb" {
         port = 443
         protocol = "HTTPS"
         status_code = "HTTP_301"
-
       }
-    } # End of my-http-https-redirect-listener
-    #Listener-2: HTTPS Listener
+    }
+    
+    # Listener-2: HTTPS Listener
     my-https-listener = {
       port = 443
       protocol = "HTTPS"
       ssl_policy = "ELBSecurityPolicy-TLS13-1-2-2021-06"
-      certificate_arn = module.acm.acm_certificate_arn
+      certificate_arn = var.certificate_arn
 
-      #Fixed Response for Root URL
+      # Fixed Response for Root URL
       fixed_response = {
         content_type = "text/plain"
         message_body = "Fixed Static Response"
         status_code = "200"
       }
 
-      #Rules
+      # Rules
       rules = {
-        #Rule-1: Forward to App1
+        # Rule-1: Forward to App1
         my-app-1-rule = {
+          priority = 10
           actions = [
             {
               type = "forward"
               target_group_key = "app1_tg"
-             
             }
           ]
           conditions = [{
-              host_header = {
-                values = ["${var.app1_host_header}.${var.domain_name}"]
+              path_pattern = {
+                values = ["/app1/*"]
               }
             }]
         }
-        #Rule-2: Forward to App2
+        
+        # Rule-2: Forward to App2
         my-app-2-rule = {
+          priority = 20
           actions = [
             {
               type = "forward"
               target_group_key = "app2_tg"
-             
             }
           ]
           conditions = [
             {
-              host_header = {
-                values = ["${var.app2_host_header}.${var.domain_name}"]
+              path_pattern = {
+                values = ["/app2/*"]
               }
             }
           ] 
-        }
-      }
+        } # End of App2 Rule
 
-    }
+        # Rule-3: Forward to Spring Boot App
+        my-spring-boot-app-rule = {
+          priority = 30
+          actions = [
+            {
+              type = "forward"
+              target_group_key = "spring_boot_app_tg"
+            }
+          ]
+          conditions = [
+            {
+              path_pattern = {
+                values = ["/*"]
+              }
+            }
+          ]
+        } # End of Spring Boot App Rule
+      } # End of Rules
+    } # End of HTTPS Listener
+  } # End of Listeners
 
-  } # End of listeners
-
-  #Target Groups
+  # Target Groups
   target_groups = {
-    #Target Group-1: App1 Target Group
+    # Target Group-1: App1 Target Group
     app1_tg = {
         name_prefix = "app1-"
         protocol = "HTTP"
@@ -101,8 +118,9 @@ module "alb" {
         }
         protocol_version = "HTTP1"
         create_attachment = false
-
-    } # End of app1_tg
+    }
+    
+    # Target Group-2: App2 Target Group
     app2_tg = {
       name_prefix = "app2-"
       protocol = "HTTP"
@@ -122,27 +140,53 @@ module "alb" {
       }
       protocol_version = "HTTP1"
       create_attachment = false
-    }
+    } 
 
+    spring_boot_app_tg = {
+      name_prefix = "sbtg-"
+      protocol = "HTTP"
+      port = 8080
+      target_type = "instance"
+      deregistration_delay = "30"
+      load_balancing_algorithm_type = "round_robin"
+      
+      health_check = {
+        enabled = true
+        interval = 30
+        timeout = 10
+        healthy_threshold = 2
+        unhealthy_threshold = 2
+        path = "/login"
+        port = "traffic-port"
+      }
+      protocol_version = "HTTP1"
+      create_attachment = false
+    } # End of Spring Boot App Target Group
   }
 
-
-  tags = local.common_tags
+  tags = var.common_tags
   enable_deletion_protection = false
 }
 
+# App1 Target Group Attachments
 resource "aws_lb_target_group_attachment" "app1_tg_attachment" {
-    for_each = {for key, instance in module.ec2_private_app1_server : key => instance}
+    for_each = var.app1_instances
     target_group_arn = module.alb.target_groups["app1_tg"].arn
     target_id = each.value.id
     port = 80
-
 }
 
-
+# App2 Target Group Attachments
 resource "aws_lb_target_group_attachment" "app2_tg_attachment" {
-    for_each = {for key, instance in module.ec2_private_app2_server : key => instance}
+    for_each = var.app2_instances
     target_group_arn = module.alb.target_groups["app2_tg"].arn
     target_id = each.value.id
     port = 80
+}
+
+resource "aws_lb_target_group_attachment" "spring_boot_app_tg_attachment" {
+  for_each = var.spring_boot_app_instances
+  target_group_arn = module.alb.target_groups["spring_boot_app_tg"].arn
+  target_id = each.value.id
+  port = 8080
 }
