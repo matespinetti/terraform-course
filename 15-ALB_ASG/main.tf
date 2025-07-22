@@ -47,8 +47,8 @@ module "compute" {
   private_app_instance_type = var.private_app_instance_type
   private_app_instance_key_pair_name = var.private_app_instance_key_pair_name
   public_subnet_ids = module.vpc.public_subnets
+  private_subnet_ids = module.vpc.private_subnets
   public_bastion_sg_id = module.security.public_bastion_sg_id
-  private_app_sg_id = module.security.private_app_sg_id
   private_instances_spring_boot_app = local.private_instances_spring_boot_app
   spring_boot_app_sg_id = module.security.spring_boot_app_sg_id
   web_app_db_name = var.web_app_db_name
@@ -59,6 +59,8 @@ module "compute" {
   private_key_content = file("${path.module}/private-key/${var.bastion_host_key_pair_name}.pem")
   common_tags = local.common_tags
   vpc_ready = module.vpc
+  spring_boot_app_target_group_arn = module.loadbalancer.target_groups["spring_boot_app_tg"].arn
+  alb_arn = module.loadbalancer.alb_arn
 }
 
 # Database Module
@@ -85,10 +87,5 @@ module "loadbalancer" {
   alb_sg_id = module.security.alb_sg_id
   certificate_arn = module.dns.acm_certificate_arn
   domain_name = var.domain_name
-  spring_boot_app_instances = {
-    for k, v in module.compute.private_spring_boot_app_instances : k => {
-      id = v.id
-    }
-  }
   common_tags = local.common_tags
 }

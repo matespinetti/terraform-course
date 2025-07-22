@@ -99,27 +99,19 @@ variable "domain_name" {
   default = "matespinetti.me"
 }
 
-variable "app1_host_header" {
-  description = "Host Header for App1"
-  type = string
-  default = "app1"
-}
 
-variable "app2_host_header" {
-  description = "Host Header for App2"
-  type = string
-  default = "app2"
-}
 
 # RDS VARIABLES
 variable "web_app_db_name" {
   description = "RDS DB Name"
   type = string
+  default = "webappdb"
 }
 
 variable "web_app_db_instance_identifier" {
   description = "RDS DB Instance Identifier"
   type = string
+  default = "webapp-db-dev"
 }
 
 variable "web_app_db_instance_class" {
@@ -131,6 +123,7 @@ variable "web_app_db_instance_class" {
 variable "web_app_db_username" {
   description = "RDS DB Username"
   type = string
+  default = "dbadmin"
 }
 
 variable "web_app_db_port" {
@@ -142,6 +135,7 @@ variable "web_app_db_port" {
 variable "web_app_db_password" {
   description = "RDS DB Password"
   type = string
+  default = "YourPassword123!"
   sensitive = true
 }
 

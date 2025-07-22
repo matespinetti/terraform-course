@@ -26,10 +26,7 @@ output "bastion_public_ip" {
   value = module.compute.bastion_host_public_ip
 }
 
-output "spring_boot_app_instances" {
-  description = "Spring Boot app instances"
-  value = module.compute.private_spring_boot_app_instances
-}
+
 
 # Load Balancer Outputs
 output "alb_dns_name" {

@@ -25,6 +25,11 @@ variable "public_subnet_ids" {
   type        = list(string)
 }
 
+variable "private_subnet_ids" {
+  description = "List of private subnet IDs"
+  type        = list(string)
+}
+
 variable "vpc_ready" {
   description = "Dependency to ensure VPC and NAT gateway are ready"
   type        = any
@@ -39,10 +44,7 @@ variable "public_bastion_sg_id" {
   type        = string
 }
 
-variable "private_app_sg_id" {
-  description = "Security group ID for private app instances"
-  type        = string
-}
+
 
 variable "spring_boot_app_sg_id" {
   description = "Security group ID for spring boot app instances"
@@ -112,6 +114,16 @@ variable "spring_boot_app_asg_desired_capacity" {
   description = "Desired number of spring boot app instances"
   type        = number
   default     = 1
+}
+
+variable "spring_boot_app_target_group_arn" {
+  description = "Target group ARN for spring boot app instances"
+  type        = string
+}
+
+variable "alb_arn" {
+  description = "ALB ARN"
+  type        = string
 }
 # ==============================================================================
 # DATABASE CONNECTION VARIABLES

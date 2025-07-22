@@ -33,13 +33,6 @@ variable "domain_name" {
 
 
 
-variable "spring_boot_app_instances" {
-  description = "Map of spring boot app instance details"
-  type = map(object({
-    id = string
-  }))
-}
-
 variable "common_tags" {
   description = "Common tags to apply to all resources"
   type = map(string)

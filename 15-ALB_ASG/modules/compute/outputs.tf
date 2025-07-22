@@ -13,15 +13,3 @@ output "bastion_host_eip" {
   value = module.ec2_bastion_host.public_ip
 }
 
-
-
-output "private_spring_boot_app_instances" {
-  description = "Map of private spring boot app instance details"
-  value = {
-    for k, v in module.ec2_private_spring_boot_app_server : k => {
-      id = v.id
-      private_ip = v.private_ip
-      availability_zone = v.availability_zone
-    }
-  }
-}
