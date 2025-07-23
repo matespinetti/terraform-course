@@ -61,7 +61,7 @@ module "compute" {
   vpc_ready = module.vpc
   spring_boot_app_target_group_arn = module.loadbalancer.target_groups["spring_boot_app_tg"].arn
   alb_arn = module.loadbalancer.alb_arn
-  email_address = var.email_address
+
 }
 
 # Database Module
@@ -92,10 +92,12 @@ module "loadbalancer" {
 }
 
 # Notifications Module
-module "notifications" {
-  source = "./modules/notifications"
-
+module "monitoring" {
+  source = "./modules/monitoring"
   name_prefix = local.name
   email_address = var.email_address
   spring_boot_app_asg_name = module.compute.spring_boot_asg_name
+  alb_arn_suffix = module.loadbalancer.alb_arn_suffix
+  spring_boot_app_target_group_arn = module.loadbalancer.target_groups["spring_boot_app_tg"].arn_suffix
+  common_tags = local.common_tags
 }

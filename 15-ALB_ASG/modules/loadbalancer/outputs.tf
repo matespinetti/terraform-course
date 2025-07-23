@@ -8,6 +8,11 @@ output "alb_arn" {
   value = module.alb.arn
 }
 
+output "alb_arn_suffix" {
+  description = "The ARN suffix of the load balancer"
+  value = module.alb.arn_suffix
+}
+
 output "alb_dns_name" {
   description = "The DNS name of the load balancer"
   value = module.alb.dns_name
