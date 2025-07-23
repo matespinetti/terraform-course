@@ -139,3 +139,10 @@ variable "web_app_db_password" {
   sensitive = true
 }
 
+
+# NOTIFICATIONS VARIABLES
+variable "email_address" {
+  description = "Email address to send notifications to"
+  type = string
+  default = "mateus.pinetti@gmail.com"
+}

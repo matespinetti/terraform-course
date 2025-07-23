@@ -21,10 +21,7 @@ module "ec2_bastion_host" {
 }
 
 
-
-
-
-# Spring Boot App Auto Scaling Group
+# Spring Boot App Auto Scaling Group and Launch Template
 module "spring_boot_app_asg" {
   source  = "terraform-aws-modules/autoscaling/aws"
   version = "9.0.1"
@@ -39,6 +36,15 @@ module "spring_boot_app_asg" {
   wait_for_capacity_timeout = 0
   health_check_type = "ELB"
   vpc_zone_identifier = var.private_subnet_ids
+
+
+  instance_refresh = {
+    strategy = "Rolling"
+    preferences = {
+      min_healthy_percentage = 50
+    }
+    triggers = ["tag"]
+  }
 
   # Traffic Source Attachment
   traffic_source_attachments = {
@@ -98,21 +104,26 @@ module "spring_boot_app_asg" {
       }
      
     }
+    request_count_per_target_target_800 = {
+      policy_type = "TargetTrackingScaling"
+      name = "${var.name_prefix}-request-count-per-target-target-800"
+      estimated_instance_warmup = 300
+      target_tracking_configuration = {
+        predefined_metric_specification = {
+          predefined_metric_type = "RequestCountPerTarget"
+        }
+        target_value = 800
+      }
+      
+    }
+
+  
   }
    #Tags
   tags = var.common_tags
 
   depends_on = [var.vpc_ready]
 }
-
-
-
-
-
-
-
-
-
 
 # Bastion Host Setup
 resource "null_resource" "bastion_host_setup" {
