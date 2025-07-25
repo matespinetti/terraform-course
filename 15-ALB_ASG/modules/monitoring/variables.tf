@@ -27,3 +27,9 @@ variable "common_tags" {
   description = "Common tags to be applied to the resources"
   type        = map(string)
 }
+
+variable "spring_boot_endpoint_url" {
+  description = "URL of the Spring Boot App"
+  type        = string
+}
+

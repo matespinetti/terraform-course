@@ -7,7 +7,6 @@ terraform {
     }
 }
 
-# Provider block
 provider "aws" {
     region = "us-east-1"
 }
@@ -19,3 +18,7 @@ resource "aws_instance" "ec2demo" {
         Name = "ec2demo"
     }
 }
+
+
+
+
